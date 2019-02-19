@@ -1,0 +1,10 @@
+[template]
+src = "varnish/default-varnish.tpl"
+dest = "/etc/default/varnish"
+mode = "0644"
+keys = [
+  "/varnish/varnish/port",
+  "/varnish/localhost",
+  "/varnish/malloc"
+]
+reload_cmd = "exec service varnish reload"

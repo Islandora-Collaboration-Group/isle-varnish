@@ -1,0 +1,9 @@
+[template]
+src = "varnish/default-vcl.tpl"
+dest = "/etc/varnish/default.vcl"
+mode = "0644"
+keys = [
+  "/varnish/backend",
+  "/varnish/backend/port"
+]
+reload_cmd = "exec service varnish reload"

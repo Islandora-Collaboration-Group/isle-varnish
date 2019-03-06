@@ -4,6 +4,7 @@ dest = "/etc/varnish/default.vcl"
 mode = "0644"
 keys = [
   "/varnish/backend",
-  "/varnish/backend/port"
+  "/varnish/backend/port",
+  "/varnish/max/connections"
 ]
 reload_cmd = "exec service varnish reload"

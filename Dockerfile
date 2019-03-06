@@ -31,7 +31,7 @@ RUN touch /var/log/cron.log && \
     echo "0 */12 * * * root /usr/sbin/tmpreaper -am 4d /tmp >> /var/log/cron.log 2>&1" | tee /etc/cron.d/tmpreaper-cron && \
     chmod 0644 /etc/cron.d/tmpreaper-cron
 
-ENV VARNISH_PORT=${VARNISH_PORT:-80} \
+ENV VARNISH_BACKEND_PORT=${VARNISH_BACKEND_PORT:-80} \
     VARNISH_BACKEND=${VARNISH_BACKEND:-apache}
 
 ## Install Varnish

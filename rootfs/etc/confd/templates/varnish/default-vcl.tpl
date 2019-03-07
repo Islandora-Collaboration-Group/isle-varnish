@@ -1,3 +1,11 @@
+/* 
+  This vcl file and code below was adapted from a blog post here:
+  https://www.ignoredbydinosaurs.com/posts/283-varnish-4-vcl-drupal-7 
+  created by John Grubb. The creator has previously indicated within that post that this is an interweaving of 
+  Four Kitchens' Varnish 3 VCL (not accessible) and this generic Varnish 4 VCL 
+  https://github.com/mattiasgeniar/varnish-4.0-configuration-templates
+*/
+
 vcl 4.0;
 
 import std;

@@ -31,14 +31,46 @@ RUN touch /var/log/cron.log && \
     echo "0 */12 * * * root /usr/sbin/tmpreaper -am 4d /tmp >> /var/log/cron.log 2>&1" | tee /etc/cron.d/tmpreaper-cron && \
     chmod 0644 /etc/cron.d/tmpreaper-cron
 
-ENV VARNISH_BACKEND_PORT=${VARNISH_BACKEND_PORT:-80} \
-    VARNISH_BACKEND=${VARNISH_BACKEND:-apache}
-
 ## Install Varnish
 RUN apt-get update && \
     apt-get install --no-install-recommends -y varnish && \
     ## Cleanup phase.
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+## Install Varnish Agent
+## General Dependencies
+RUN BUILD_DEPS="build-essential \
+    unzip \
+    automake \
+    autotools-dev \
+    autoconf \
+    python-docutils \
+    make \
+    cmake \
+    pkg-config \
+    libtool" && \
+    VAGENT_DEP_PACKS="software-properties-common \
+    language-pack-en-base \
+    libvarnishapi1 \
+    libvarnishapi-dev \
+    libmicrohttpd-dev \
+    libcurl4-openssl-dev" && \
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
+    apt-get update && \
+    apt-get install --no-install-recommends -y $BUILD_DEPS && \
+    apt-get install -y --no-install-recommends $VAGENT_DEP_PACKS && \
+    ## Make Varnish Agent
+    cd /tmp && \
+    git clone https://github.com/varnish/vagent2.git && \
+    cd /tmp/vagent2 && \
+    ./autogen.sh && \
+    ./configure && \
+    make && \
+    make install && \
+    ldconfig && \
+    ## Cleanup phase.
+    apt-get purge -y $BUILD_DEPS $VAGENT_DEP_PACKS --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ARG BUILD_DATE

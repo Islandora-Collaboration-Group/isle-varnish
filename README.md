@@ -15,7 +15,7 @@ Based on:
       - Oracle Java 8 Server JRE
 
 Contains and Includes:
-  - [Varnish](https://varnish-cache.org/releases/index.html) 5.2 an HTTP accelerator
+  - [Varnish](https://varnish-cache.org/releases/index.html) 4.1.11 an HTTP accelerator
 
 Size: TBD
 

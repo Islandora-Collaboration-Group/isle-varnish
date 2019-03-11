@@ -21,7 +21,7 @@ backend apache { # Define one backend
     # We prefer to only do a HEAD /
     .request =
       "HEAD / HTTP/1.1"
-      "Host: localhost"
+      "Host: {{getv "/varnish/admin"}}"
       "Connection: close"
       "User-Agent: Varnish Health Probe";
 
@@ -38,7 +38,7 @@ backend apache { # Define one backend
 
 /*acl purge {
   # ACL we will use later to allow purges
-  "localhost";
+  "{{getv "/varnish/admin"}}";
   "apache";
   "::1";
 }*/
@@ -46,7 +46,7 @@ backend apache { # Define one backend
 
 /*acl editors {
   # ACL to honor the "Cache-Control: no-cache" header to force a refresh but only from selected IPs
-  "localhost";
+  "{{getv "/varnish/admin"}}";
   "apache";
   "::1";
 }*/

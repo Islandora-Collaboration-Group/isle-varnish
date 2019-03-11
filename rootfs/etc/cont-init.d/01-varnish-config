@@ -1,3 +1,11 @@
 #!/usr/bin/with-contenv sh
 
 /usr/local/bin/confd -onetime -backend env
+
+rm /etc/varnish/secret
+
+touch /etc/varnish/secret
+
+echo $VARNISH_SECRET > /etc/varnish/secret
+
+chmod 600 /etc/varnish/secret

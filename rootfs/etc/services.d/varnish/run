@@ -1,5 +1,3 @@
 #!/usr/bin/with-contenv sh
 
 exec service varnish start
-
-#exec systemctl restart varnish.service

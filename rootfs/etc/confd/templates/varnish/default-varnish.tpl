@@ -46,7 +46,7 @@ MEMLOCK=82000
 #
 # I am the confd template
 DAEMON_OPTS="-a :{{getv "/varnish/varnish/port"}} \
-             -T localhost:{{getv "/varnish/localhost"}} \
+             -T {{getv "/varnish/admin"}}:{{getv "/varnish/admin/port"}} \
              -f /etc/varnish/default.vcl \
              -S /etc/varnish/secret \
              -s malloc,{{getv "/varnish/malloc"}}"

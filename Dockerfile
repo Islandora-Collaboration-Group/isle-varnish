@@ -21,7 +21,7 @@ RUN GEN_DEP_PACKS="software-properties-common \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV LC_ALL=en_US.UTF-8 \
+ENV LC_ALL=en_US.UTF-8 \ 
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en
 
@@ -31,46 +31,32 @@ RUN touch /var/log/cron.log && \
     echo "0 */12 * * * root /usr/sbin/tmpreaper -am 4d /tmp >> /var/log/cron.log 2>&1" | tee /etc/cron.d/tmpreaper-cron && \
     chmod 0644 /etc/cron.d/tmpreaper-cron
 
-## Install Varnish
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y varnish && \
-    ## Cleanup phase.
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-## Install Varnish Agent
-## General Dependencies
-RUN BUILD_DEPS="build-essential \
-    unzip \
-    automake \
-    autotools-dev \
-    autoconf \
-    python-docutils \
-    make \
-    cmake \
-    pkg-config \
-    libtool" && \
-    VAGENT_DEP_PACKS="software-properties-common \
-    language-pack-en-base \
-    libvarnishapi1 \
-    libvarnishapi-dev \
-    libmicrohttpd-dev \
-    libcurl4-openssl-dev" && \
+## Install Varnish && Varnish Agent
+RUN BUILD_DEPS="gnupg-agent" && \
+    VARNISH_DEPS="libmicrohttpd10" && \
+    ## libmicrohttpd10 package removed in bionic, need to install for varnish agent
+    cp /etc/apt/sources.list /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list && \
+    sed -i 's/bionic/xenial/' /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list && \
+    touch /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    echo 'Package: *' > /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    echo 'Pin: release n=xenial' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    echo 'Pin-Priority: 99' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    echo '' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    echo 'Package: libmicrohttpd10' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    echo 'Pin: release n=xenial' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    echo 'Pin-Priority: 500' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
     echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
     apt-get update && \
-    apt-get install --no-install-recommends -y $BUILD_DEPS && \
-    apt-get install -y --no-install-recommends $VAGENT_DEP_PACKS && \
-    ## Make Varnish Agent
-    cd /tmp && \
-    git clone https://github.com/varnish/vagent2.git && \
-    cd /tmp/vagent2 && \
-    ./autogen.sh && \
-    ./configure && \
-    make && \
-    make install && \
-    ldconfig && \
+    apt-get install --no-install-recommends -y $BUILD_DEPS $VARNISH_DEPS && \
+    ## Remove xenial repos as only used to install libmicrohttpd10 for varnish agent. Could cause conflicts
+    rm /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list && \
+    rm /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
+    ## No bionic packages exist yet, downgrading to xenial
+    curl -s https://packagecloud.io/install/repositories/varnishcache/varnish41/script.deb.sh | os=ubuntu dist=xenial bash && \
+    apt-get update && \
+    apt-get install --no-install-recommends -y varnish varnish-agent=4.1.3-12~xenial && \
     ## Cleanup phase.
-    apt-get purge -y $BUILD_DEPS $VAGENT_DEP_PACKS --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
+    apt-get purge -y $BUILD_DEPS --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ARG BUILD_DATE
@@ -91,6 +77,6 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 COPY rootfs /
 
 ## Exposes ports for Varnish, admin panel and agent (if warranted)
-EXPOSE 6081 6082 6085
+EXPOSE 6081 6082
 
 ENTRYPOINT ["/init"]

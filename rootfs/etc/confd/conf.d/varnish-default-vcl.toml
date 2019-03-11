@@ -3,6 +3,7 @@ src = "varnish/default-vcl.tpl"
 dest = "/etc/varnish/default.vcl"
 mode = "0644"
 keys = [
+  "/varnish/admin",
   "/varnish/backend",
   "/varnish/backend/port",
   "/varnish/max/connections"

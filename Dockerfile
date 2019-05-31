@@ -1,4 +1,4 @@
-FROM islandoracollabgroup/isle-ubuntu-basebox:serverjre8
+FROM islandoracollabgroup/isle-ubuntu-basebox:1.1.1
 
 ## General Dependencies
 RUN GEN_DEP_PACKS="software-properties-common \

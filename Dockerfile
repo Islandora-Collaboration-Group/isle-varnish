@@ -22,9 +22,17 @@ RUN GEN_DEP_PACKS="software-properties-common \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV LC_ALL=en_US.UTF-8 \ 
+## S6-Overlay @see: https://github.com/just-containers/s6-overlay
+ENV S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-1.22.1.0}
+ADD https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / && \
+    rm /tmp/s6-overlay-amd64.tar.gz
+
+
+ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en
+
 
 ## Install Varnish && Varnish Agent
 RUN BUILD_DEPS="gnupg-agent" && \

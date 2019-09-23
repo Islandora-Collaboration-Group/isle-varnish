@@ -8,4 +8,3 @@ keys = [
   "/varnish/admin/port",
   "/varnish/malloc"
 ]
-reload_cmd = "exec service varnish reload"

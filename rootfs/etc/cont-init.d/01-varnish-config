@@ -9,3 +9,5 @@ touch /etc/varnish/secret
 echo $VARNISH_SECRET > /etc/varnish/secret
 
 chmod 600 /etc/varnish/secret
+
+service varnish start

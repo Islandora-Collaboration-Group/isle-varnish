@@ -6,25 +6,19 @@ An optional caching / reverse proxy to use for high traffic, improve the speed o
 [Varnish](https://varnish-cache.org/) is an HTTP accelerator designed for content-heavy dynamic web sites as well as APIs. Varnish is focused exclusively on HTTP, unlike other proxy servers that often support FTP, SMTP and other network protocols.
 
 
-**Please note:** This image is designed to be opt-in for usage by an enduser and not forced by default ISLE. This image is also currently in pre-alpha stage and not for general usage as of yet.
+**Please note:** This image is designed to be opt-in for `Production` usage by an enduser and is not forced by default ISLE.
 
 Based on:
-  - [ISLE-apache](https://github.com/Islandora-Collaboration-Group/isle-apache)
-    - Ubuntu 18.04 "Bionic" (@see [ISLE-ubuntu-basebox](https://cloud.docker.com/u/islandoracollabgroup/repository/docker/islandoracollabgroup/isle-ubuntu-basebox)
-      - General Dependencies
-      - Oracle Java 8 Server JRE
+  - [Ubuntu 16.04 "Xenial"](https://hub.docker.com/_/ubuntu)
+  - General Dependencies
 
 Contains and Includes:
-  - [Varnish](https://varnish-cache.org/releases/index.html) 4.1.11 an HTTP accelerator
+  - [Varnish 4.1.11](https://varnish-cache.org/releases/index.html) an HTTP accelerator
 
-Size: TBD
+Size: `~337 MB`
 
 ## Generic Usage
 
 ```
 docker run -it -p "6081:6081" --rm islandoracollabgroup/isle-varnish bash
 ```
-
-### Default Login information
-
-* TBD

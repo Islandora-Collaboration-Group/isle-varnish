@@ -1,4 +1,4 @@
-FROM islandoracollabgroup/isle-ubuntu-basebox:serverjre8
+FROM ubuntu:xenial
 
 ## General Dependencies
 RUN GEN_DEP_PACKS="software-properties-common \
@@ -10,6 +10,7 @@ RUN GEN_DEP_PACKS="software-properties-common \
     bzip2 \
     openssl \
     openssh-client \
+    curl \
     file" && \
     echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
     apt-get update && \
@@ -21,37 +22,23 @@ RUN GEN_DEP_PACKS="software-properties-common \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV LC_ALL=en_US.UTF-8 \ 
+## S6-Overlay @see: https://github.com/just-containers/s6-overlay
+ENV S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-1.22.1.0}
+ADD https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz /tmp/
+RUN tar xzf /tmp/s6-overlay-amd64.tar.gz -C / && \
+    rm /tmp/s6-overlay-amd64.tar.gz
+
+
+ENV LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en
 
-## tmpreaper - cleanup /tmp on the running container
-RUN touch /var/log/cron.log && \
-    touch /etc/cron.d/tmpreaper-cron && \
-    echo "0 */12 * * * root /usr/sbin/tmpreaper -am 4d /tmp >> /var/log/cron.log 2>&1" | tee /etc/cron.d/tmpreaper-cron && \
-    chmod 0644 /etc/cron.d/tmpreaper-cron
 
 ## Install Varnish && Varnish Agent
 RUN BUILD_DEPS="gnupg-agent" && \
     VARNISH_DEPS="libmicrohttpd10" && \
-    ## libmicrohttpd10 package removed in bionic, need to install for varnish agent
-    cp /etc/apt/sources.list /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list && \
-    sed -i 's/bionic/xenial/' /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list && \
-    touch /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo 'Package: *' > /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo 'Pin: release n=xenial' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo 'Pin-Priority: 99' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo '' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo 'Package: libmicrohttpd10' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo 'Pin: release n=xenial' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo 'Pin-Priority: 500' >> /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
     apt-get update && \
     apt-get install --no-install-recommends -y $BUILD_DEPS $VARNISH_DEPS && \
-    ## Remove xenial repos as only used to install libmicrohttpd10 for varnish agent. Could cause conflicts
-    rm /etc/apt/sources.list.d/xenial_for_libmicrohttpd10.list && \
-    rm /etc/apt/preferences.d/xenial_for_libmicrohttpd10-500 && \
-    ## No bionic packages exist yet, downgrading to xenial
     curl -s https://packagecloud.io/install/repositories/varnishcache/varnish41/script.deb.sh | os=ubuntu dist=xenial bash && \
     apt-get update && \
     apt-get install --no-install-recommends -y varnish varnish-agent=4.1.3-12~xenial && \

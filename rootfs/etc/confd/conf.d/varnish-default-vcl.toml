@@ -8,4 +8,3 @@ keys = [
   "/varnish/backend/port",
   "/varnish/max/connections"
 ]
-reload_cmd = "exec service varnish reload"

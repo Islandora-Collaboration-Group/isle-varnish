@@ -4,6 +4,7 @@
   created by John Grubb. The creator has previously indicated within that post that this is an interweaving of 
   Four Kitchens' Varnish 3 VCL (not accessible) and this generic Varnish 4 VCL 
   https://github.com/mattiasgeniar/varnish-4.0-configuration-templates
+  ISLE CONFD template - (as of v.1.3.0)
 */
 
 vcl 4.0;
@@ -381,16 +382,17 @@ sub vcl_deliver {
   # So take hits with a grain of salt
   set resp.http.X-Cache-Hits = obj.hits;
 
+  # Original configuration had these striped out but putting back in as almost impossible to be sure that Varnish is working. - GDM v.1.3.0 release note
   # Remove some headers: PHP version
-  unset resp.http.X-Powered-By;
+  # unset resp.http.X-Powered-By;
 
   # Remove some headers: Apache version & OS
-  unset resp.http.Server;
-  unset resp.http.X-Drupal-Cache;
-  unset resp.http.X-Varnish;
-  unset resp.http.Via;
-  unset resp.http.Link;
-  unset resp.http.X-Generator;
+  # unset resp.http.Server;
+  # unset resp.http.X-Drupal-Cache;
+  # unset resp.http.X-Varnish;
+  # unset resp.http.Via;
+  # unset resp.http.Link;
+  # unset resp.http.X-Generator;
 
   return (deliver);
 }

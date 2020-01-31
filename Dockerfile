@@ -35,6 +35,7 @@ ENV LC_ALL=en_US.UTF-8 \
 
 
 ## Install Varnish && Varnish Agent
+# @see: https://packagecloud.io/varnishcache/varnish41
 RUN BUILD_DEPS="gnupg-agent" && \
     VARNISH_DEPS="libmicrohttpd10" && \
     apt-get update && \

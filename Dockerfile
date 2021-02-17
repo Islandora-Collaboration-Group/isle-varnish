@@ -24,7 +24,7 @@ RUN GEN_DEP_PACKS="software-properties-common \
 
 ## S6-Overlay
 # @see: https://github.com/just-containers/s6-overlay
-ENV S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-2.2.0.1}
+ENV S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION:-2.2.0.3}
 ADD https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64-installer /tmp/
 RUN chmod +x /tmp/s6-overlay-amd64-installer && \
     /tmp/s6-overlay-amd64-installer /

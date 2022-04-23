@@ -41,7 +41,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_ORG }}/isle-varnish:1.5.17
+            ${{ secrets.DOCKERHUB_ORG }}/isle-varnish:1.5.18
             ${{ secrets.DOCKERHUB_ORG }}/isle-varnish:latest
       -
         name: Image digest
